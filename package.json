@@ -9,6 +9,8 @@
   "author": "Alexey Ponomarev",
   "license": "ISC",
   "dependencies": {
+    "async": "^1.5.2",
+    "cheerio": "^0.20.0",
     "node-telegram-bot-api": "^0.20.1"
   }
 }
