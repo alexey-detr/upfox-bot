@@ -41,6 +41,7 @@ class Software {
         let matches = this.pattern.exec(body);
         if (matches === null) {
           this.textInfo = `${this.name} can't parse version!`;
+          console.error(`Can't parse version for ${this.code} with pattern ${this.pattern} on page ${this.url}`);
         } else {
           let url = this.urlDownload ? this.urlDownload : this.url;
           if (this.version !== null && this.version !== matches[1]) {
