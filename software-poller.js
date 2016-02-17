@@ -3,20 +3,32 @@
 var fs = require('fs');
 var path = require('path');
 var cheerio = require('cheerio');
-var request = require('request');
 var async = require('async');
+var Promise = require('bluebird');
+var Software = require('./software').Software;
 
 class SoftwarePoller {
   constructor() {
-    this.polls = [];
-    this.walk(path.join(__dirname, 'polls'), (err, files) => {
-      if (err) {
-        throw err;
-      }
-      files.forEach((file) => {
-        let poll = require(file);
-        poll.code = path.basename(file, '.js');
-        this.polls.push(poll);
+    this.softwareList = [];
+    this.textInfo = null;
+    this.onNewVersion = () => {};
+  }
+
+  init() {
+    return new Promise((resolve, reject) => {
+      this.walk(path.join(__dirname, 'polls'), (err, files) => {
+        if (err) {
+          return reject(err);
+        }
+        this.softwareList = files
+          .filter((file) => !/test\.js$/.test(file))
+          .map((file) => new Software(file));
+        this.softwareList.forEach((software) => {
+          software.onNewVersion = (software) => {
+            this.onNewVersion(software);
+          }
+        });
+        resolve();
       });
     });
   }
@@ -47,44 +59,31 @@ class SoftwarePoller {
   }
 
   list() {
-    return this.polls
+    return this.softwareList
       .map((item) => item.name)
       .sort((a, b) => a.localeCompare(b))
       .join('\n');
   }
 
-  poll(callback) {
-    let results = [];
-    async.eachLimit(this.polls, 4, (poll, next) => {
-      request(poll.url, (err, response, body) => {
+  poll() {
+    return new Promise((resolve, reject) => {
+      let results = [];
+      async.eachLimit(this.softwareList, 4, (software, next) => {
+        software.poll().then(() => {
+          results.push(software.textInfo);
+          next();
+        }).catch(next);
+      }, (err) => {
         if (err) {
-          console.error(`An error occurred while polling ${poll.code}: ${err.message}`);
-          return next();
+          console.error(`An error occurred while polling: ${err.message}`);
+          return reject(err);
         }
-        if (response.statusCode !== 200) {
-          console.error(`Got ${response.statusCode} HTTP status code when polling ${poll.code}`);
-          return next();
-        }
-        let resultItem = '';
-        let matches = poll.pattern.exec(body);
-        if (matches === null) {
-          resultItem = `${poll.name} can't parse version!`;
-        } else {
-          let url = poll.urlDownload ? poll.urlDownload : poll.url;
-          resultItem = `${poll.name} ${matches[1]}\n${url}`;
-        }
-        results.push(resultItem);
-        next();
+        this.textInfo = results.sort((a, b) => a.localeCompare(b))
+          .join('\n\n');
+        resolve();
       });
-    }, (err) => {
-      if (err) {
-        return console.error(`An error occurred while polling: ${err.message}`);
-      }
-      callback(results
-        .sort((a, b) => a.localeCompare(b))
-        .join('\n\n'));
     });
   }
 }
 
-module.exports = new SoftwarePoller();
+module.exports.SoftwarePoller = SoftwarePoller;
