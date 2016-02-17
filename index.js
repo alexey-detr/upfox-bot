@@ -8,7 +8,7 @@ var bot = new TelegramBot(token, {polling: true});
 
 bot.onText(/\/help/, (msg, match) => {
   let message =
-    "Hi I'm Upfox, and I will help you to watch a new versions of software!\n" +
+    "Hi! I'm Upfox, and I will help you to watch a new versions of software!\n" +
     "You can use following commands:\n\n" +
     "/list – to list the software I'm watching for\n" +
     "/poll – to get info about fresh versions I've found for ya ^^";

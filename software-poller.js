@@ -49,6 +49,7 @@ class SoftwarePoller {
   list() {
     return this.polls
       .map((item) => item.name)
+      .sort((a, b) => a.localeCompare(b))
       .join('\n');
   }
 
@@ -69,7 +70,8 @@ class SoftwarePoller {
         if (matches === null) {
           resultItem = `${poll.name} can't parse version!`;
         } else {
-          resultItem = `${poll.name} ${matches[1]}\n${poll.url}`;
+          let url = poll.urlDownload ? poll.urlDownload : poll.url;
+          resultItem = `${poll.name} ${matches[1]}\n${url}`;
         }
         results.push(resultItem);
         next();
@@ -78,7 +80,9 @@ class SoftwarePoller {
       if (err) {
         return console.error(`An error occurred while polling: ${err.message}`);
       }
-      callback(results.sort((a, b) => a.localeCompare(b)).join('\n\n'));
+      callback(results
+        .sort((a, b) => a.localeCompare(b))
+        .join('\n\n'));
     });
   }
 }
