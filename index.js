@@ -63,9 +63,7 @@ initWatchingUsers().then(() => {
       let message =
         "Hey! You can use following commands:\n\n" +
         "/list – to list the software I'm watching for\n" +
-        "/poll – to get info about fresh versions I've found for ya ^^\n" +
-        "/watch – to start watching, I'll notify ya if something will change asap!\n" +
-        "/unwatch – to stop watching";
+        "/poll – to get info about fresh versions I've found for ya ^^";
       bot.sendMessage(msg.from.id, message);
     }
   },
