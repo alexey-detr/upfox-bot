@@ -44,11 +44,14 @@ class Software {
           console.error(`Can't parse version for ${this.code} with pattern ${this.pattern} on page ${this.url}`);
         } else {
           let url = this.urlDownload ? this.urlDownload : this.url;
-          if (this.version !== null && this.version !== matches[1]) {
+          var oldVersion = this.version;
+          var newVersion = matches[1];
+          this.textInfo = `${this.name} ${newVersion}\n${url}`;
+          this.version = newVersion;
+
+          if (oldVersion !== null && oldVersion !== newVersion) {
             this.onNewVersion(this);
           }
-          this.version = matches[1];
-          this.textInfo = `${this.name} ${this.version}\n${url}`;
         }
         resolve();
       });
