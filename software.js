@@ -1,7 +1,8 @@
 'use strict';
 
-var path = require('path');
-var request = require('request');
+const path = require('path');
+const request = require('request');
+const _ = require('lodash');
 
 class Software {
   constructor(file) {
@@ -12,13 +13,15 @@ class Software {
     this.code = config.code;
     this.url = config.url;
     this.urlDownload = config.urlDownload;
+    this.validateVersion = config.validateVersion;
     this.pattern = config.pattern;
     this.textInfo = '';
     this.lastPolledAt = null;
 
     this.version = null;
-    this.onNewVersion = () => {};
-    this.timeout = config.timeout ? config.timeout : 5 * 60 * 1000;
+    this.onNewVersion = () => {
+    };
+    this.timeout = config.timeout ? config.timeout : 3 * 60 * 1000;
   }
 
   poll() {
@@ -27,8 +30,8 @@ class Software {
         return resolve();
       }
       console.log(`Polling software with code '${this.code}'...`);
+      this.lastPolledAt = Date.now();
       request(this.url, (err, response, body) => {
-        this.lastPolledAt = Date.now();
         if (err) {
           console.error(`An error occurred while polling ${this.code}: ${err.message}`);
           return reject(err);
@@ -41,16 +44,20 @@ class Software {
         if (matches === null) {
           this.textInfo = `${this.name} can't parse version!`;
           console.error(`Can't parse version for ${this.code} with pattern ${this.pattern} on page ${this.url}`);
-        } else {
-          let url = this.urlDownload ? this.urlDownload : this.url;
-          var oldVersion = this.version;
-          var newVersion = matches[1];
-          this.textInfo = `${this.name} ${newVersion}\n${url}`;
-          this.version = newVersion;
+          return resolve();
+        }
 
-          if (oldVersion !== null && oldVersion !== newVersion) {
-            this.onNewVersion(this);
-          }
+        let url = this.urlDownload ? this.urlDownload : this.url;
+        let oldVersion = this.version;
+        let newVersion = matches[1];
+        if (_.isFunction(this.validateVersion) && !this.validateVersion(newVersion)) {
+          return resolve();
+        }
+        this.textInfo = `${this.name} ${newVersion}\n${url}`;
+        this.version = newVersion;
+
+        if (oldVersion !== null && oldVersion !== newVersion) {
+          this.onNewVersion(this);
         }
         resolve();
       });

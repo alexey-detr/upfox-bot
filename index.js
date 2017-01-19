@@ -61,20 +61,12 @@ initWatchingUsers().then(() => {
     action: (msg, match) => {
       let message =
         "Hey! You can use following commands:\n\n" +
-        "/list – to list the software I'm watching for\n" +
-        "/poll – to get info about fresh versions I've found for ya ^^";
+        "/list – to get info about all fresh versions I've found for ya ^^";
       bot.sendMessage(msg.from.id, message);
     }
   },
   {
     pattern: /^\/list$/,
-    action: (msg, match) => {
-      var fromId = msg.from.id;
-      bot.sendMessage(fromId, softwarePoller.list(), {disable_web_page_preview: true});
-    }
-  },
-  {
-    pattern: /^\/poll$/,
     action: (msg, match) => {
       var message = softwarePoller.textInfo;
       if (message === null) {
@@ -84,28 +76,17 @@ initWatchingUsers().then(() => {
     }
   },
   {
-    pattern: /^\/watch$/,
-    action: (msg, match) => {
-      if (watchingUserIds.has(msg.from.id)) {
-        return bot.sendMessage(msg.from.id, "But you are already in watchers list...");
-      }
-      bot.sendMessage(msg.from.id, "You're watching now!");
-    }
-  },
-  {
     pattern: /^\/stat$/,
+    admin: true,
     action: (msg, match) => {
       bot.sendMessage(msg.from.id, `Current number of watchers: ${watchingUserIds.size.toString()}`);
-    }
-  },
-  {
-    pattern: /^\/myid$/,
-    action: (msg, match) => {
-      bot.sendMessage(msg.from.id, `Your user ID is ${msg.from.id}`);
     }
   }
 ].forEach((action) => {
   bot.onText(action.pattern, (msg, match) => {
+    if (action.admin && msg.from.id != 100396221) {
+      return;
+    }
     action.action(msg, match);
     watchingUserIds.add(msg.from.id);
     persistWatchingUsers();
