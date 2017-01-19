@@ -1,7 +1,6 @@
 'use strict';
 
 var TelegramBot = require('node-telegram-bot-api');
-var Promise = require('bluebird');
 var SoftwarePoller = new require('./software-poller').SoftwarePoller;
 var db = new require('./db').db;
 
@@ -40,7 +39,7 @@ initWatchingUsers().then(() => {
     };
     softwarePoller.onNewVersion = (software) => {
       watchingUserIds.forEach((userId) => {
-        bot.sendMessage(userId, `Hey! Here is a new version of ${software.name}\n` + software.textInfo);
+        bot.sendMessage(userId, `Hey! Here is a new version of ${software.textInfo}`);
       });
     };
     setInterval(poll, 3000);
@@ -94,9 +93,15 @@ initWatchingUsers().then(() => {
     }
   },
   {
-    pattern: /^\/watchers$/,
+    pattern: /^\/stat$/,
     action: (msg, match) => {
-      bot.sendMessage(msg.from.id, watchingUserIds.size.toString());
+      bot.sendMessage(msg.from.id, `Current number of watchers: ${watchingUserIds.size.toString()}`);
+    }
+  },
+  {
+    pattern: /^\/myid$/,
+    action: (msg, match) => {
+      bot.sendMessage(msg.from.id, `Your user ID is ${msg.from.id}`);
     }
   }
 ].forEach((action) => {

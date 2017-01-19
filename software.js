@@ -1,7 +1,6 @@
 'use strict';
 
 var path = require('path');
-var Promise = require('bluebird');
 var request = require('request');
 
 class Software {

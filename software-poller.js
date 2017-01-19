@@ -4,7 +4,6 @@ var fs = require('fs');
 var path = require('path');
 var cheerio = require('cheerio');
 var async = require('async');
-var Promise = require('bluebird');
 var Software = require('./software').Software;
 
 class SoftwarePoller {
