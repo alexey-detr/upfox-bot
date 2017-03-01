@@ -1,7 +1,7 @@
 'use strict';
 
-var levelup = require('levelup');
-var db = levelup('./database', {
+const levelup = require('levelup');
+const db = levelup('./database', {
   valueEncoding: 'json'
 });
 

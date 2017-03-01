@@ -5,9 +5,9 @@ const SoftwarePoller = new require('./software-poller').SoftwarePoller;
 const db = new require('./db').db;
 
 const token = require('./token');
-const bot = new TelegramBot(token, {polling: true});
-const softwarePoller = new SoftwarePoller();
-const watchingUserIds;
+let bot = new TelegramBot(token, {polling: true});
+let softwarePoller = new SoftwarePoller();
+let watchingUserIds;
 
 function initWatchingUsers() {
   return new Promise((resolve, reject) => {
@@ -32,7 +32,7 @@ function persistWatchingUsers() {
 
 initWatchingUsers().then(() => {
   softwarePoller.init().then(() => {
-    var poll = () => {
+    let poll = () => {
       softwarePoller.poll().catch((err) => {
         console.error(err.message);
       });
