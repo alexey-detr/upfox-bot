@@ -1,13 +1,13 @@
 'use strict';
 
-var TelegramBot = require('node-telegram-bot-api');
-var SoftwarePoller = new require('./software-poller').SoftwarePoller;
-var db = new require('./db').db;
+const TelegramBot = require('node-telegram-bot-api');
+const SoftwarePoller = new require('./software-poller').SoftwarePoller;
+const db = new require('./db').db;
 
-var token = '185864451:AAHNK55-esjCL2X1-1n4Up9KZ1VPCkscF9Q';
-var bot = new TelegramBot(token, {polling: true});
-var softwarePoller = new SoftwarePoller();
-var watchingUserIds;
+const token = require('./token');
+const bot = new TelegramBot(token, {polling: true});
+const softwarePoller = new SoftwarePoller();
+const watchingUserIds;
 
 function initWatchingUsers() {
   return new Promise((resolve, reject) => {
