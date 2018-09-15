@@ -4,6 +4,9 @@ function processVersion(version) {
     return version.replace('-', ' ')
         .replace(/beta(\d)/, (match, digit) => {
             return `beta ${digit}`;
+        })
+        .replace(/(\d)beta/, (match, digit) => {
+            return `${digit} beta`;
         });
 }
 
