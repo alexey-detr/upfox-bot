@@ -1,5 +1,3 @@
-'use strict';
-
 module.exports = {
     name: 'Docker CE',
     url: 'https://github.com/docker/docker-ce/releases.atom',

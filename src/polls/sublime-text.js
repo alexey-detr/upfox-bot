@@ -1,5 +1,3 @@
-'use strict';
-
 module.exports = {
     name: 'Sublime Text 3',
     url: 'http://www.sublimetext.com/3',
