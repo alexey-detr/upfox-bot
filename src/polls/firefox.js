@@ -1,4 +1,6 @@
 module.exports = {
+    // Inconsistent page
+    disabled: true,
     name: 'Firefox',
     url: 'https://www.mozilla.org/en-US/firefox/releases/',
     urlDownload: 'https://www.mozilla.org/en-US/firefox/',
