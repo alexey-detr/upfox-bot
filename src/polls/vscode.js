@@ -1,6 +1,6 @@
 module.exports = {
     name: 'Visual Studio Code',
-    url: 'https://code.visualstudio.com/updates',
+    url: 'https://github.com/Microsoft/vscode/releases.atom',
     urlDownload: 'https://code.visualstudio.com/',
-    pattern: /Update ([0-9.]+)/,
+    pattern: /\/Microsoft\/vscode\/releases\/tag\/v([0-9.]+)/,
 };
