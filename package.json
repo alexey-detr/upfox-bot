@@ -4,7 +4,7 @@
   "description": "Upfox bot allows to monitor the new versions of software.",
   "repository": {
     "type": "git",
-    "url": "git@bitbucket.org:alexey_detr/upfox-bot.git"
+    "url": "git@github.com:alexey-detr/upfox-bot.git"
   },
   "main": "index.js",
   "scripts": {
