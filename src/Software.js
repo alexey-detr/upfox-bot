@@ -1,4 +1,5 @@
 const axios = require('axios');
+const compareVersions = require('compare-versions');
 
 function processVersion(version) {
     return version.replace('-', ' ')
@@ -19,7 +20,7 @@ class Software {
         this.debug = config.debug;
         this.urlDownload = config.urlDownload;
         this.validateVersion = config.validateVersion;
-        this.pattern = config.pattern;
+        this.pattern = new RegExp(config.pattern, 'g');
         this.textInfo = '';
         this.lastPolledAt = null;
 
@@ -46,7 +47,7 @@ class Software {
                         console.error(message);
                         return reject(new Error(message));
                     }
-                    const matches = this.pattern.exec(response.data);
+                    const matches = response.data.matchAll(this.pattern);
                     if (matches === null) {
                         this.textInfo = `${this.name} can't parse version!`;
                         console.error(`Can't parse version for ${this.code} with pattern ${this.pattern} on page ${this.url}`);
@@ -55,7 +56,9 @@ class Software {
 
                     const url = this.urlDownload ? this.urlDownload : this.url;
                     const oldVersion = this.version;
-                    const newVersion = processVersion(matches[1]);
+                    const allVersions = [...matches].map(match => match[1]);
+                    allVersions.sort(compareVersions);
+                    const newVersion = processVersion(allVersions.pop());
 
                     if (typeof this.validateVersion === 'function' && !this.validateVersion(newVersion)) {
                         return resolve();
